@@ -63,7 +63,7 @@ impl Image {
             if image[index] == 0 {
                 print!(" ");
             } else {
-                print!("X");
+                print!("█");
             }
         }
         print!("\n");
