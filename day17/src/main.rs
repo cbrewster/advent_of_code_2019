@@ -114,6 +114,19 @@ fn send_string(computer: &mut Computer, string: &str) {
     computer.push_input(10);
 }
 
+// So, many people were doing this part by hand... I opted to not cave in and do it by hand,
+// but essentially this is a brute force approach and is likely to have some issues.
+//
+// So essentially the idea is to go over all possible functions. We know that every part of the
+// procedure has to be split into a function, so we can split from the front and then place all
+// occurences with a "|" and continue splitting from the new head of the string. This is repeated
+// for A, B, C. I use the "|" to ensure that new patterns do not emerge as sections of the program
+// are removed. Functions B and C will ignore any leading "|" and if they end up containing a "|",
+// they are no longer considered.
+// If all parts of the program were replaced (the remaining string is empty), then we have a set of
+// functions that can be used.
+//
+// This works for my input, but I would not be confident in saying this will work for all solutions.
 fn find_main_program(moves_str: &str) -> Option<(String, String, String, String)> {
     for a in 2..20 {
         for b in 2..20 {
@@ -122,20 +135,22 @@ fn find_main_program(moves_str: &str) -> Option<(String, String, String, String)
                 if a.chars().last() != Some(',') {
                     continue;
                 }
-                let new_str = moves_str.replace(a, "");
-                let b = &new_str[0..b];
-                if b.chars().last() != Some(',') {
+                let new_str = moves_str.replace(a, "|");
+                let offset = new_str.chars().position(|c| c != '|').unwrap_or(0);
+                let b = &new_str[offset..b + offset];
+                if b.chars().last() != Some(',') || b.contains("|") {
                     continue;
                 }
 
-                let new_str = new_str.replace(b, "");
-                let c = &new_str[0..c];
-                if c.chars().last() != Some(',') {
+                let new_str = new_str.replace(b, "|");
+                let offset = new_str.chars().position(|c| c != '|').unwrap_or(0);
+                let c = &new_str[offset..c + offset];
+                if c.chars().last() != Some(',') || c.contains("|") {
                     continue;
                 }
 
-                let new_str = new_str.replace(c, "");
-                let final_str = new_str.replace(",", "");
+                let new_str = new_str.replace(c, "|");
+                let final_str = new_str.replace("|", "");
 
                 if final_str.len() == 0 {
                     let mut main_procedure = moves_str.to_owned();
