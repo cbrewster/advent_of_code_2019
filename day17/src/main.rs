@@ -85,8 +85,6 @@ fn part2(map: &Map, mut program: Program) -> isize {
     let moves = find_moves(map);
     let mut moves_str = moves_to_string(&moves);
     moves_str.push(',');
-    moves.len();
-    &moves_str;
     moves_str.chars().count();
 
     let (main_seq, a, b, c) = find_main_program(&moves_str).unwrap();
